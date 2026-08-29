@@ -25,7 +25,9 @@ map = """
 """
 
 [keymap]
-layers = 2
+# One more layer than is defined below: the keymap references layer 2
+# (LT(2, ...), TG(2)), which stays empty until the user fills it in.
+layers = 3
 
 [[keymap.layer]] # layer 0
 keys = """
