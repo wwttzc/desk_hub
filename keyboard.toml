@@ -6,11 +6,12 @@ vendor_id = 0x4c4b
 product_id = 0x4643
 manufacturer = "RMK"
 chip = "esp32s3"
+usb_enable = true
 
 [matrix]
 # Row and col pins are mandatory
-row_pins = ["GPIO_6", "GPIO_7", "GPIO_8", "GPIO_9"]
-col_pins = ["GPIO_19", "GPIO_20", "GPIO_21"]
+row_pins = ["GPIO6", "GPIO7", "GPIO8", "GPIO9"]
+col_pins = ["GPIO19", "GPIO13", "GPIO14"]
 # RMK uses col2row as the default matrix diode direction, if you want to use a row2col matrix, add `row2col = true`
 # row2col = true
 
