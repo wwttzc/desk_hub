@@ -113,54 +113,54 @@ matrix = [2, 2]
 [[rgb_matrix.layout]]
 x = 0
 y = 132
-matrix = [4, 0]
+matrix = [3, 3]
 
 [[rgb_matrix.layout]]
 x = 44
 y = 132
-matrix = [4, 1]
+matrix = [3, 1]
 
 [[rgb_matrix.layout]]
 x = 88
 y = 132
-matrix = [4, 2]
+matrix = [3, 2]
 
 [[rgb_matrix.layout]]
 x = 121
 y = 99
-matrix = [3, 3]
+matrix = [3, 0]
 
 # -- 1 2 3 --
 [[rgb_matrix.layout]]
 x = 0
 y = 176
-matrix = [5, 0]
+matrix = [4, 0]
 
 [[rgb_matrix.layout]]
 x = 44
 y = 176
-matrix = [5, 1]
+matrix = [4, 1]
 
 [[rgb_matrix.layout]]
 x = 88
 y = 176
-matrix = [5, 2]
+matrix = [4, 2]
 
 # -- 0 . Enter --
 [[rgb_matrix.layout]]
 x = 22
 y = 220
-matrix = [7, 0]
+matrix = [5, 3]
 
 [[rgb_matrix.layout]]
 x = 88
 y = 220
-matrix = [7, 2]
+matrix = [5, 2]
 
 [[rgb_matrix.layout]]
 x = 121
 y = 187
-matrix = [6, 3]
+matrix = [5, 0]
 
 [ws2812]
 # Measured from the board.
