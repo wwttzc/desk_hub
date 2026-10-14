@@ -47,12 +47,15 @@ map = """
 """
 
 [keymap]
-# One layer. The two top keys are `No`, and no further layers are defined here.
+# Four layers, but only the first is defined here: RMK pads every layer past the
+# last `[[keymap.layer]]` with transparent keys (`_`), which is what leaves them
+# free to be filled in from Vial. Defining them in this file would only add
+# bindings that would then have to be overwritten by hand.
 #
 # The blank under `Kp0` lines up with the `[1]` above: it is spacing, not a key.
 # Newlines carry no meaning in this string — it is read as one flat sequence,
 # and only the count has to match `layout.map`.
-layers = 1
+layers = 4
 
 [[keymap.layer]] # layer 0
 keys = """
