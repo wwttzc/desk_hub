@@ -24,9 +24,67 @@ sat = 255
 val = 100
 speed = 127
 
-# `[rgb_matrix.animations]` is deliberately absent: an empty table enables every
-# effect that is implemented, which is what a first bring-up wants. List names
-# explicitly to narrow the set that appears in Vial.
+# --- Enabled effects ---
+#
+# This table is a **whitelist**: once it is non-empty, only the names listed here
+# appear in Vial, and an entry set to `false` is *skipped* rather than treated as
+# "disable this one". So narrowing the list means naming everything that should
+# stay, not naming what should go.
+#
+# The three effects deliberately left out, all of which are sparse by design and
+# need more work before they are worth having on the board:
+#
+#   raindrops     (id 24) — QMK seeds the whole chain on the first frame, but the
+#                           seeding only covers the first batch, so most of the
+#                           chain fills in one LED at a time
+#   digital_rain  (id 30) — the white droplet head picks up a colour cast
+#   pixel_rain    (id 43) — only a couple of LEDs ever toggle; the cycle re-arms
+#                           its timer on the frame's last batch while the LED is
+#                           painted by whichever batch owns its index
+#
+# A misspelled name here is only a warning, not an error, and shows up as
+# "the effect is missing from Vial". The list is checked against the parser.
+[rgb_matrix.animations]
+solid_color = true
+alpha_mods = true
+gradient_up_down = true
+gradient_left_right = true
+breathing = true
+band_sat = true
+band_val = true
+band_pinwheel_sat = true
+band_pinwheel_val = true
+band_spiral_sat = true
+band_spiral_val = true
+cycle_all = true
+cycle_left_right = true
+cycle_up_down = true
+rainbow_moving_chevron = true
+cycle_out_in = true
+cycle_out_in_dual = true
+cycle_pinwheel = true
+cycle_spiral = true
+dual_beacon = true
+rainbow_beacon = true
+rainbow_pinwheels = true
+jellybean_raindrops = true
+hue_breathing = true
+hue_pendulum = true
+hue_wave = true
+typing_heatmap = true
+solid_reactive_simple = true
+solid_reactive = true
+solid_reactive_wide = true
+solid_reactive_multiwide = true
+solid_reactive_cross = true
+solid_reactive_multicross = true
+solid_reactive_nexus = true
+solid_reactive_multinexus = true
+splash = true
+multisplash = true
+solid_splash = true
+solid_multisplash = true
+pixel_fractal = true
 
 # --- LED table: one entry per LED, in chain order ---
 #
