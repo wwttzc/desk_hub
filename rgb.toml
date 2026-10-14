@@ -30,8 +30,10 @@ speed = 127
 
 # --- LED table: one entry per LED, in chain order ---
 #
-# 19 LEDs, one per key, numbered in the order the keys are read: the two top
-# keys, then the NumLock row, and so on down to the `0` row.
+# The order of the entries below **is the soldering order of the chain**: the
+# first entry is the LED nearest the MCU. Getting this wrong is what makes an
+# effect light the wrong key, so the order here came from the board, not from
+# the key grid.
 #
 # Coordinates come from the board's grid formula, with the matrix position as
 # the index:
@@ -58,30 +60,30 @@ speed = 127
 # `matrix` is the electrical (row, col), matching keyboard.toml. It is what
 # connects a keypress to its LED for the reactive effects.
 #
+# The chain walks the electrical rows from top to bottom, and each row from its
+# highest column down to column 0 — right to left on the board. That is the
+# order the entries below record, and it is the order the LEDs are soldered in,
+# not the order the keys are read.
+#
 # If a column does not light where the gradient says it should, the LED chain
 # order here is what to reorder.
 
-# -- top row --
-[[rgb_matrix.layout]]
-x = 0
-y = 0
-matrix = [0, 0]
-
+# -- top row, right to left --
 [[rgb_matrix.layout]]
 x = 44
 y = 0
 matrix = [0, 1]
 
-# -- NumLock row --
 [[rgb_matrix.layout]]
 x = 0
-y = 44
-matrix = [1, 0]
+y = 0
+matrix = [0, 0]
 
+# -- NumLock row, right to left --
 [[rgb_matrix.layout]]
-x = 44
+x = 132
 y = 44
-matrix = [1, 1]
+matrix = [1, 3]
 
 [[rgb_matrix.layout]]
 x = 88
@@ -89,15 +91,20 @@ y = 44
 matrix = [1, 2]
 
 [[rgb_matrix.layout]]
-x = 132
+x = 44
 y = 44
-matrix = [1, 3]
+matrix = [1, 1]
 
-# -- 7 8 9 --
 [[rgb_matrix.layout]]
 x = 0
+y = 44
+matrix = [1, 0]
+
+# -- 7 8 9, right to left --
+[[rgb_matrix.layout]]
+x = 88
 y = 88
-matrix = [2, 0]
+matrix = [2, 2]
 
 [[rgb_matrix.layout]]
 x = 44
@@ -105,20 +112,15 @@ y = 88
 matrix = [2, 1]
 
 [[rgb_matrix.layout]]
-x = 88
-y = 88
-matrix = [2, 2]
-
-# -- 4 5 6 + --
-[[rgb_matrix.layout]]
 x = 0
-y = 132
-matrix = [3, 3]
+y = 88
+matrix = [2, 0]
 
+# -- 4 5 6 +, right to left --
 [[rgb_matrix.layout]]
-x = 44
-y = 132
-matrix = [3, 1]
+x = 121
+y = 99
+matrix = [3, 3]
 
 [[rgb_matrix.layout]]
 x = 88
@@ -126,15 +128,20 @@ y = 132
 matrix = [3, 2]
 
 [[rgb_matrix.layout]]
-x = 121
-y = 99
-matrix = [3, 0]
+x = 44
+y = 132
+matrix = [3, 1]
 
-# -- 1 2 3 --
 [[rgb_matrix.layout]]
 x = 0
+y = 132
+matrix = [3, 0]
+
+# -- 1 2 3, right to left --
+[[rgb_matrix.layout]]
+x = 88
 y = 176
-matrix = [4, 0]
+matrix = [4, 2]
 
 [[rgb_matrix.layout]]
 x = 44
@@ -142,14 +149,14 @@ y = 176
 matrix = [4, 1]
 
 [[rgb_matrix.layout]]
-x = 88
+x = 0
 y = 176
-matrix = [4, 2]
+matrix = [4, 0]
 
-# -- 0 . Enter --
+# -- 0 . Enter, right to left --
 [[rgb_matrix.layout]]
-x = 22
-y = 220
+x = 121
+y = 187
 matrix = [5, 3]
 
 [[rgb_matrix.layout]]
@@ -158,8 +165,8 @@ y = 220
 matrix = [5, 2]
 
 [[rgb_matrix.layout]]
-x = 121
-y = 187
+x = 22
+y = 220
 matrix = [5, 0]
 
 [ws2812]
