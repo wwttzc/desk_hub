@@ -1,0 +1,150 @@
+# RGB Matrix configuration for the Desk Hub keyboard.
+#
+# Read by `rmk-macro` during the build, from the directory holding
+# keyboard.toml. Keys follow QMK's `rgb_matrix` / `ws2812` sections and its
+# `config.h` macros, so a QMK keyboard's settings can be carried over directly.
+#
+# NOTE ON COORDINATES: the `layout` table below is a placeholder laid out on a
+# 6x4 grid. QMK's coordinate space is x in 0..=224 and y in 0..=64, and the
+# values decide how the position-dependent effects (gradients, pinwheels,
+# spirals, ripples) look. Real positions come from the PCB, not from a formula;
+# replace these once the LED coordinates are known.
+
+[rgb_matrix]
+enabled = true
+# 19 WS2812 at full white would draw roughly 1.1 A through the ribbon cable, so
+# the ceiling is well below 255. Vial's brightness slider tops out at this value,
+# which is what keeps a user from reaching full white by accident.
+max_brightness = 100
+# QMK's default centre.
+center_point = [112, 32]
+
+[rgb_matrix.default]
+on = true
+animation = "cycle_left_right"
+hue = 0
+sat = 255
+val = 100
+speed = 127
+
+# `[rgb_matrix.animations]` is deliberately omitted: an empty table enables every
+# effect that is implemented, which is the right default while bringing the board
+# up. List names explicitly to narrow the set that appears in Vial.
+
+# --- LED table: one entry per LED, in chain order ---
+#
+# Chain order measured from the PCB netlist, starting at the ribbon's data pin:
+#   SW2 SW1 SW8 SW7 SW6 SW5 SW11 SW10 SW9 SW16 SW15
+#   SW14 SW13 SW19 SW18 SW17 SW24 SW23 SW21
+#
+# `matrix` is the electrical (row, col); `flags` defaults to 4
+# (LED_FLAG_KEYLIGHT) when omitted, which is every LED on this board.
+
+# row 0
+[[rgb_matrix.layout]]
+x = 0
+y = 0
+matrix = [0, 0]
+
+[[rgb_matrix.layout]]
+x = 75
+y = 0
+matrix = [0, 1]
+
+# row 1
+[[rgb_matrix.layout]]
+x = 0
+y = 13
+matrix = [1, 0]
+
+[[rgb_matrix.layout]]
+x = 75
+y = 13
+matrix = [1, 1]
+
+[[rgb_matrix.layout]]
+x = 150
+y = 13
+matrix = [1, 2]
+
+[[rgb_matrix.layout]]
+x = 224
+y = 13
+matrix = [1, 3]
+
+# row 2
+[[rgb_matrix.layout]]
+x = 0
+y = 26
+matrix = [2, 0]
+
+[[rgb_matrix.layout]]
+x = 75
+y = 26
+matrix = [2, 1]
+
+[[rgb_matrix.layout]]
+x = 150
+y = 26
+matrix = [2, 2]
+
+# row 3
+[[rgb_matrix.layout]]
+x = 0
+y = 39
+matrix = [3, 0]
+
+[[rgb_matrix.layout]]
+x = 75
+y = 39
+matrix = [3, 1]
+
+[[rgb_matrix.layout]]
+x = 150
+y = 39
+matrix = [3, 2]
+
+[[rgb_matrix.layout]]
+x = 224
+y = 39
+matrix = [3, 3]
+
+# row 4
+[[rgb_matrix.layout]]
+x = 0
+y = 51
+matrix = [4, 0]
+
+[[rgb_matrix.layout]]
+x = 75
+y = 51
+matrix = [4, 1]
+
+[[rgb_matrix.layout]]
+x = 150
+y = 51
+matrix = [4, 2]
+
+# row 5
+[[rgb_matrix.layout]]
+x = 0
+y = 64
+matrix = [5, 0]
+
+[[rgb_matrix.layout]]
+x = 75
+y = 64
+matrix = [5, 1]
+
+[[rgb_matrix.layout]]
+x = 150
+y = 64
+matrix = [5, 2]
+
+[ws2812]
+# From the main board schematic, which labels this pin "WS2812B GPIO48".
+pin = "GPIO48"
+driver = "rmt"
+rgbw = false
+# WS2812 wants green first, which is also the driver's default.
+color_order = "grb"

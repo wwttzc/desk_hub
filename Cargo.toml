@@ -1,0 +1,90 @@
+[package]
+name = "desk_hub"
+version = "0.1.0"
+description = "Desk Hub keyboard firmware"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+
+# This manifest is a template for the generated project, not a project in its
+# own right: it never builds here, because `rmk` (the generated crate) lives in a
+# subdirectory and there is no src/ beside it. The fields below still have to be
+# coherent, because Cargo reads this file when it walks up from `rmk/` looking
+# for a workspace root.
+#
+# Without the marker below that walk fails the build: Cargo finds this manifest,
+# cannot parse it as a workspace, and reports "failed searching for potential
+# workspace". Declaring this file to be its own single-crate workspace stops the
+# search here and leaves the generated crate independent.
+[workspace]
+
+# This file replaces the one in rmk-rs/rmk-template's esp32s3/ directory.
+# `rmkit create` copies a Cargo.toml sitting next to keyboard.toml over the
+# template's copy verbatim, and skips its own feature adjustments. That is the
+# only supported way to point a generated project at a fork, because rmkit has
+# no --repo/--git option and always downloads the template from a hard-coded
+# repository.
+#
+# `rev` pins an exact commit: a branch name here would make every CI run build
+# whatever that branch happens to be at the time.
+
+[[bin]]
+name = "desk_hub"
+path = "src/main.rs"
+test = false
+bench = false
+
+[dependencies]
+rmk = { git = "https://github.com/wwttzc/desk_hub_rmk", rev = "59d95dd3a47939cb89930fea0bc0d586240af3b6", default-features = false, features = [
+    "esp32s3_ble",
+    "log",
+    "storage",
+    "vial",
+    "rgb",
+    "smart_leds",
+] }
+embassy-executor = { version = "0.10" }
+esp-backtrace = { version = "0.20", features = [
+    "esp32s3",
+    "panic-handler",
+    "println",
+] }
+esp-hal = { version = "1.2.2", features = ["esp32s3", "unstable"] }
+esp-storage = { version = "0.10", features = ["embedded-storage", "esp32s3"] }
+esp-alloc = { version = "0.11" }
+esp-println = { version = "0.18", features = ["esp32s3", "log-04"] }
+esp-radio = { version = "1.0.0-beta.1", features = ["esp32s3", "unstable", "ble"] }
+esp-rtos = { version = "0.4", features = ["esp32s3", "esp-radio", "embassy"] }
+esp-bootloader-esp-idf = { version = "0.6", features = ["esp32s3", "log-04"] }
+bt-hci = { version = "0.10" }
+# The RMT-based WS2812 driver: `rmk`'s generated RGB code names
+# `::esp_hal_smartled::RmtSmartLeds`, so the crate has to be a direct dependency
+# of the binary crate, not only of `rmk`.
+#
+# Its chip feature is deliberately not enabled. `esp-hal-smartled` only needs
+# the peripheral API; the chip selection arrives through the `esp-hal` features
+# above, which Cargo unifies across the graph. Enabling its `esp32s3` feature
+# would drag in crates it lists only as dev-dependencies.
+esp-hal-smartled = { version = "0.18", default-features = false }
+
+[build-dependencies]
+xz2 = "0.1.7"
+json = "0.12"
+const-gen = "1.6"
+embuild = "0.33"
+cc = "1.2.9"
+
+[profile.dev.package.esp-storage]
+opt-level = 3
+
+[profile.dev]
+# Rust debug is too slow on Xtensa.
+opt-level = "s"
+
+[profile.release]
+codegen-units = 1        # LLVM optimises better with a single thread
+debug = 2
+debug-assertions = false
+incremental = false
+lto = 'thin'
+opt-level = 3
+overflow-checks = false

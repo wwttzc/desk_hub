@@ -1,13 +1,113 @@
-name: Build RMK firmware
+name: Build firmware
+
+# Replaces the upstream `user_build.yml` reusable workflow, which cannot carry
+# extra configuration files into the generated project.
+#
+# Why a custom workflow is needed:
+#
+# `rmkit create` copies keyboard.toml and vial.json into the generated project,
+# and lets a Cargo.toml or memory.x sitting next to keyboard.toml replace the
+# template's copy. Nothing else crosses that boundary — the list is a hard-coded
+# constant in rmkit (`USER_OWNED_FILES`), and rmkit has no option for extra files.
+#
+# `rgb.toml` is not on that list, so the upstream workflow would generate a
+# project where `rmk-macro` finds no RGB configuration and emits no RGB code at
+# all. This workflow runs `rmkit create` and then copies the file in, which the
+# upstream reusable workflow gives no place to do.
+#
+# It otherwise follows upstream closely: same toolchain bootstrap, same
+# cargo-make uf2/bin step, same artifact naming.
+
 on:
   workflow_dispatch:
   push:
     paths:
       - "**"
 
+env:
+  RUST_MIN_STACK: "67108864"
+
 jobs:
   build:
-    uses: rmk-rs/rmk/.github/workflows/user_build.yml@main
-    with:
-      keyboard_toml_path: "keyboard.toml"
-      vial_json_path: "vial.json"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      # The standard toolchain first: `rmkit`, `cargo-make` and `espup` are host
+      # tools and build fine with it.
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: cargo-bins/cargo-binstall@main
+      - name: Install rmkit
+        run: cargo binstall rmkit -y
+      - name: Install cargo-make, espup and cargo-espflash
+        # `cargo-espflash` is what the template's `uf2` cargo-make task invokes
+        # to produce the merged .bin. Installing it here rather than letting the
+        # task auto-install keeps the failure, if any, in a named step.
+        run: cargo binstall cargo-make espup cargo-espflash -y
+
+      # esp32s3 is an Xtensa chip, so the firmware itself needs Espressif's fork
+      # of the Rust toolchain rather than the standard one.
+      - name: Cache ESP Rust toolchain
+        id: esp-toolchain-cache
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.rustup/toolchains/esp
+            ~/export-esp.sh
+          key: ${{ runner.os }}-esp-toolchain-esp32s3-v1
+      - name: Prepare esp environment
+        if: steps.esp-toolchain-cache.outputs.cache-hit != 'true'
+        run: espup install
+
+      - name: Create firmware project
+        run: |
+          rmkit create \
+            --keyboard-toml-path keyboard.toml \
+            --vial-json-path vial.json \
+            --version main \
+            --target-dir rmk
+
+          # rmkit does not copy rgb.toml (see the header comment), so it is
+          # placed by hand. `rmk-macro` looks for it beside keyboard.toml.
+          if [ -f rgb.toml ]; then
+            cp rgb.toml rmk/rgb.toml
+            echo "rgb.toml copied into the generated project"
+          else
+            echo "No rgb.toml: the firmware will be built without RGB"
+          fi
+
+      - name: Cache cargo registry and target
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "rmk -> target"
+          key: esp32s3
+
+      - name: Build firmware
+        working-directory: ./rmk
+        run: |
+          . /home/runner/export-esp.sh
+          cargo make uf2 --release
+
+      - name: Upload bin artifacts
+        # espflash produces .bin images for esp32 chips rather than uf2/hex, and
+        # for a unibody keyboard the merged image is what gets flashed.
+        uses: actions/upload-artifact@v7
+        with:
+          name: desk_hub-firmware_bin
+          path: rmk/*.bin
+
+      - name: Stage ELF
+        # The raw ELF is useful for debugging with probe-rs or gdb.
+        working-directory: ./rmk
+        run: |
+          for f in target/*/release/*; do
+            if [ -f "$f" ] && [ -x "$f" ]; then
+              cp "$f" "$(basename "$f").elf"
+            fi
+          done
+
+      - name: Upload elf artifacts
+        uses: actions/upload-artifact@v7
+        with:
+          name: desk_hub-firmware_elf
+          path: rmk/*.elf
