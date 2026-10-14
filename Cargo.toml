@@ -34,7 +34,7 @@ test = false
 bench = false
 
 [dependencies]
-rmk = { git = "https://github.com/wwttzc/desk_hub_rmk", rev = "0fd8cce5773a8f866acceabf313a23fbbdeb1798", default-features = false, features = [
+rmk = { git = "https://github.com/wwttzc/desk_hub_rmk", rev = "35bf925e407cf826e6a275a5b123d752c2fcabfb", default-features = false, features = [
     "esp32s3_ble",
     "log",
     "storage",
