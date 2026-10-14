@@ -11,7 +11,7 @@ usb_enable = true
 [matrix]
 # Row and col pins are mandatory
 row_pins = ["GPIO6", "GPIO7", "GPIO8", "GPIO9"]
-col_pins = ["GPIO19", "GPIO13", "GPIO14"]
+col_pins = ["GPIO12", "GPIO13", "GPIO14"]
 # RMK uses col2row as the default matrix diode direction, if you want to use a row2col matrix, add `row2col = true`
 # row2col = true
 
