@@ -1,47 +1,65 @@
 # Documentation: https://rmk.rs/docs/configuration/
 [keyboard]
-name = "RMK"
-product_name = "RMK Keyboard"
+name = "Desk Hub"
+product_name = "Desk Hub Numpad"
 vendor_id = 0x4c4b
 product_id = 0x4643
-manufacturer = "RMK"
+manufacturer = "Desk Hub"
 chip = "esp32s3"
 usb_enable = true
 
+# The esp32s3 chip default enables BLE
+# (`rmk-config/src/default_config/esp32s3.toml`), so it has to be turned off
+# explicitly here. This board is wired only.
+[ble]
+enabled = false
+
 [matrix]
-# Row and col pins are mandatory
-row_pins = ["GPIO6", "GPIO7", "GPIO8", "GPIO9"]
-col_pins = ["GPIO12", "GPIO13", "GPIO14"]
-# RMK uses col2row as the default matrix diode direction, if you want to use a row2col matrix, add `row2col = true`
-# row2col = true
+# Pin assignment measured from the board:
+#   rows r0..r5 -> GPIO5, GPIO6, GPIO7, GPIO15, GPIO16, GPIO17
+#   cols c0..c3 -> GPIO9, GPIO10, GPIO11, GPIO12
+#
+# GPIO19/GPIO20 are USB D-/D+ and must never appear here — esp-hal encodes that
+# as a moved-value error at compile time. The WS2812 data line is GPIO4, which
+# `rgb.toml` sets.
+row_pins = ["GPIO5", "GPIO6", "GPIO7", "GPIO15", "GPIO16", "GPIO17"]
+col_pins = ["GPIO9", "GPIO10", "GPIO11", "GPIO12"]
 
 [layout]
-rows = 4
-cols = 3
+# 6x4 matrix, 19 of the 24 positions populated.
+#
+# Each entry is the electrical (row, col) of a key, listed in the order the
+# keymap below is read. The line breaks are the physical rows, and `[1]` is the
+# gap under the 2u-wide `0` key. The keymap is written in the same shape so the
+# two blocks can be read against each other.
+#
+# The tall keys are wired on their lower row — `+` on r3 and `Enter` on r5, the
+# same column as `-` — which leaves (2,3) and (4,3) empty alongside (5,1).
+rows = 6
+cols = 4
 map = """
-(0,0)  (0,1)  (0,2)
-(1,0)  (1,1)  (1,2)
-(2,0)  (2,1)  (2,2)
-(3,0)  (3,1)  (3,2)
+(0,0)       (0,1)
+(1,0)       (1,1)       (1,2)       (1,3)
+(2,0)       (2,1)       (2,2)
+(3,0)       (3,1)       (3,2)       (3,3)
+(4,0)       (4,1)       (4,2)
+(5,0)       [1]         (5,2)       (5,3)
 """
 
 [keymap]
-# One more layer than is defined below: the keymap references layer 2
-# (LT(2, ...), TG(2)), which stays empty until the user fills it in.
-layers = 3
+# One layer. The two top keys are `No`, and no further layers are defined here.
+#
+# The blank under `Kp0` lines up with the `[1]` above: it is spacing, not a key.
+# Newlines carry no meaning in this string — it is read as one flat sequence,
+# and only the count has to match `layout.map`.
+layers = 1
 
 [[keymap.layer]] # layer 0
 keys = """
-A       B           C
-Kc1     Kc2         Kc3
-LCtrl   MO(1)       LShift
-OSL(1)  LT(2, Kc9)  LM(1, LShift | LGui)
-"""
-
-[[keymap.layer]] # layer 1
-keys = """
-_  TT(1)  TG(2)
-_  _      _
-_  _      _
-_  _      _
+No          No
+NumLock     KpSlash     KpAsterisk  KpMinus
+Kp7         Kp8         Kp9
+Kp4         Kp5         Kp6         KpPlus
+Kp1         Kp2         Kp3
+Kp0                     KpDot       KpEnter
 """
